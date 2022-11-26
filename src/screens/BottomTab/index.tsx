@@ -189,7 +189,7 @@ const TabBar: React.FC<BottomTabBarProps> = ({
         {state.routes.map((route, index) => {
           const isFocus = state.index === index;
           const options = descriptors[route.key].options;
-          const TabButton = options.tabBarButton;
+          const TabButton = options.tabBarButton as React.ElementType;
 
           const onPress = () => {
             const event = navigation.emit({
