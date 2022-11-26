@@ -52,7 +52,9 @@ const tabMiddleButtonPadding = 25;
 const tabMiddleButtonTopWidth = 55;
 const tabMiddleButtonBottomWidth = 80;
 const tabMiddleButtonCurvePadding = 15;
-const tabBarColor = '#FF9281';
+const tabBarColor = colors.dodi_green;
+const tabBarRadius = 15;
+const isBorderRadius = true;
 
 const TabBarButton: React.FC<ITabBarButton> = ({
   animationValue,
@@ -128,10 +130,28 @@ const TabBar: React.FC<BottomTabBarProps> = ({
   const left = shape
     .line()
     .x(d => d[0])
-    .y(d => d[1])([
-    [0, tabMiddleButtonPadding],
-    [width / 2, tabMiddleButtonPadding],
-  ]);
+    .y(d => d[1])
+    .curve(shape.curveCatmullRomOpen)(
+    isBorderRadius
+      ? [
+          [tabBarRadius, tabMiddleButtonPadding],
+          [width / 2, tabMiddleButtonPadding],
+          [width / 2, tabBarHeight],
+          [0, tabBarHeight],
+          [0, tabMiddleButtonPadding + tabBarRadius],
+          [tabBarRadius / 4, tabMiddleButtonPadding + tabBarRadius / 4],
+          [tabBarRadius, tabMiddleButtonPadding],
+          [width / 2, tabMiddleButtonPadding],
+        ]
+      : [
+          [0, tabMiddleButtonPadding],
+          [width / 2, tabMiddleButtonPadding],
+          [width / 2, tabBarHeight],
+          [0, tabBarHeight],
+          [0, tabMiddleButtonPadding],
+          [width / 2, tabMiddleButtonPadding],
+        ],
+  );
   const center = shape
     .line()
     .x(d => d[0])
@@ -153,13 +173,28 @@ const TabBar: React.FC<BottomTabBarProps> = ({
   const right = shape
     .line()
     .x(d => d[0])
-    .y(d => d[1])([
-    [width / 2, tabMiddleButtonPadding],
-    [width, tabMiddleButtonPadding],
-    [width, tabBarHeight],
-    [0, tabBarHeight],
-    [0, tabMiddleButtonPadding],
-  ]);
+    .y(d => d[1])
+    .curve(shape.curveCatmullRomOpen)(
+    isBorderRadius
+      ? [
+          [width / 2, tabMiddleButtonPadding],
+          [width - tabBarRadius, tabMiddleButtonPadding],
+          [width - tabBarRadius / 4, tabMiddleButtonPadding + tabBarRadius / 4],
+          [width, tabMiddleButtonPadding + tabBarRadius],
+          [width, tabBarHeight],
+          [width / 2, tabBarHeight],
+          [width / 2, tabMiddleButtonPadding],
+          [width - tabBarRadius, tabMiddleButtonPadding],
+        ]
+      : [
+          [width / 2, tabMiddleButtonPadding],
+          [width, tabMiddleButtonPadding],
+          [width, tabBarHeight],
+          [width / 2, tabBarHeight],
+          [width / 2, tabMiddleButtonPadding],
+          [width, tabMiddleButtonPadding],
+        ],
+  );
 
   return (
     <Animated.View
@@ -202,6 +237,7 @@ const TabBar: React.FC<BottomTabBarProps> = ({
 
           return (
             <TabButton
+              key={index}
               isFocus={isFocus}
               onPress={onPress}
               onLongPress={onLongPress}
@@ -221,6 +257,10 @@ const TabBar: React.FC<BottomTabBarProps> = ({
   );
 };
 
+function NullScreen() {
+  return null;
+}
+
 export default function () {
   return (
     <Tabs.Navigator
@@ -231,36 +271,36 @@ export default function () {
       }}>
       {TabScreen({
         name: '1',
-        component: () => null,
+        component: NullScreen,
         Icon: ({focused}: ITabBarIcon) => (
           <MaterialCommunityIcons
             name={focused ? 'format-list-text' : 'format-list-text'}
             size={26}
-            color={focused ? colors.blue : colors.black}
+            color={focused ? colors.dodi_brown : colors.dodi}
           />
         ),
       })}
       {TabScreen({
         name: '2',
-        component: () => null,
+        component: NullScreen,
         isCenterIcon: true,
         Icon: ({focused}: ITabBarIcon) => (
           <Foundation
             name={focused ? 'home' : 'home'}
             size={34}
-            color={focused ? colors.black : colors.black}
+            color={focused ? colors.dodi : colors.dodi}
           />
         ),
         zoomLevel: 1.1,
       })}
       {TabScreen({
         name: '3',
-        component: () => null,
+        component: NullScreen,
         Icon: ({focused}: ITabBarIcon) => (
           <MaterialCommunityIcons
             name={focused ? 'magnify' : 'magnify'}
             size={26}
-            color={focused ? colors.blue : colors.black}
+            color={focused ? colors.dodi_brown : colors.dodi}
           />
         ),
       })}
@@ -291,7 +331,7 @@ const tabBarStyles = StyleSheet.create({
     height: 70,
     borderRadius: 35,
     backgroundColor: colors.white,
-    marginBottom: tabMiddleButtonPadding,
+    marginBottom: tabMiddleButtonPadding + getBottomSpace(),
     justifyContent: 'center',
     alignItems: 'center',
   },
