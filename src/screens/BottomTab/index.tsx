@@ -109,6 +109,7 @@ const TabScreen: React.FC<ITabScreen> = ({
         tabBarIcon: (props: ITabBarIcon) => (
           <ReAnimated.View
             style={[
+              tabBarStyles.icon_button,
               ableZoom ? buttonAnimationStyle : {},
               isCenterIcon ? tabBarStyles.center_button : {},
             ]}>
@@ -334,5 +335,8 @@ const tabBarStyles = StyleSheet.create({
     marginBottom: tabMiddleButtonPadding + getBottomSpace(),
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  icon_button: {
+    marginBottom: getBottomSpace(),
   },
 });
