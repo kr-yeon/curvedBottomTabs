@@ -54,7 +54,6 @@ const tabMiddleButtonBottomWidth = 80;
 const tabMiddleButtonCurvePadding = 15;
 const tabBarColor = colors.dodi_green;
 const tabBarRadius = 15;
-const isBorderRadius = true;
 
 const TabBarButton: React.FC<ITabBarButton> = ({
   animationValue,
@@ -132,27 +131,16 @@ const TabBar: React.FC<BottomTabBarProps> = ({
     .line()
     .x(d => d[0])
     .y(d => d[1])
-    .curve(shape.curveCatmullRomOpen)(
-    isBorderRadius
-      ? [
-          [tabBarRadius, tabMiddleButtonPadding],
-          [width / 2, tabMiddleButtonPadding],
-          [width / 2, tabBarHeight],
-          [0, tabBarHeight],
-          [0, tabMiddleButtonPadding + tabBarRadius],
-          [tabBarRadius / 4, tabMiddleButtonPadding + tabBarRadius / 4],
-          [tabBarRadius, tabMiddleButtonPadding],
-          [width / 2, tabMiddleButtonPadding],
-        ]
-      : [
-          [0, tabMiddleButtonPadding],
-          [width / 2, tabMiddleButtonPadding],
-          [width / 2, tabBarHeight],
-          [0, tabBarHeight],
-          [0, tabMiddleButtonPadding],
-          [width / 2, tabMiddleButtonPadding],
-        ],
-  );
+    .curve(shape.curveCatmullRomOpen)([
+    [tabBarRadius, tabMiddleButtonPadding],
+    [width / 2, tabMiddleButtonPadding],
+    [width / 2, tabBarHeight],
+    [0, tabBarHeight],
+    [0, tabMiddleButtonPadding + tabBarRadius],
+    [tabBarRadius / 4, tabMiddleButtonPadding + tabBarRadius / 4],
+    [tabBarRadius, tabMiddleButtonPadding],
+    [width / 2, tabMiddleButtonPadding],
+  ]);
   const center = shape
     .line()
     .x(d => d[0])
@@ -175,27 +163,16 @@ const TabBar: React.FC<BottomTabBarProps> = ({
     .line()
     .x(d => d[0])
     .y(d => d[1])
-    .curve(shape.curveCatmullRomOpen)(
-    isBorderRadius
-      ? [
-          [width / 2, tabMiddleButtonPadding],
-          [width - tabBarRadius, tabMiddleButtonPadding],
-          [width - tabBarRadius / 4, tabMiddleButtonPadding + tabBarRadius / 4],
-          [width, tabMiddleButtonPadding + tabBarRadius],
-          [width, tabBarHeight],
-          [width / 2, tabBarHeight],
-          [width / 2, tabMiddleButtonPadding],
-          [width - tabBarRadius, tabMiddleButtonPadding],
-        ]
-      : [
-          [width / 2, tabMiddleButtonPadding],
-          [width, tabMiddleButtonPadding],
-          [width, tabBarHeight],
-          [width / 2, tabBarHeight],
-          [width / 2, tabMiddleButtonPadding],
-          [width, tabMiddleButtonPadding],
-        ],
-  );
+    .curve(shape.curveCatmullRomOpen)([
+    [width / 2, tabMiddleButtonPadding],
+    [width - tabBarRadius, tabMiddleButtonPadding],
+    [width - tabBarRadius / 4, tabMiddleButtonPadding + tabBarRadius / 4],
+    [width, tabMiddleButtonPadding + tabBarRadius],
+    [width, tabBarHeight],
+    [width / 2, tabBarHeight],
+    [width / 2, tabMiddleButtonPadding],
+    [width - tabBarRadius, tabMiddleButtonPadding],
+  ]);
 
   return (
     <Animated.View
