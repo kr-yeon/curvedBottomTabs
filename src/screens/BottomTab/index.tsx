@@ -1,4 +1,4 @@
-import React, {FunctionComponent} from 'react';
+import React, { FunctionComponent, useContext } from "react";
 import {
   BottomTabBarButtonProps,
   BottomTabBarProps,
@@ -7,7 +7,7 @@ import {
 } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Foundation from 'react-native-vector-icons/Foundation';
-import {Dimensions, Pressable, StyleSheet, Animated, View} from 'react-native';
+import { Dimensions, Pressable, StyleSheet, Animated, View, useWindowDimensions } from "react-native";
 import colors from '@utils/colors';
 import ReAnimated, {
   withSpring,
@@ -46,7 +46,6 @@ interface ITabScreen {
 }
 
 const Tabs = createBottomTabNavigator();
-const {width} = Dimensions.get('window');
 const tabBarHeight = 90 + getBottomSpace();
 const tabMiddleButtonPadding = 25;
 const tabMiddleButtonTopWidth = 55;
@@ -125,6 +124,7 @@ const TabBar: React.FC<BottomTabBarProps> = ({
   descriptors,
   navigation,
 }) => {
+  const {width} = useWindowDimensions();
   const realDescriptor = Object.values(descriptors)[state.index];
 
   const left = shape
@@ -176,7 +176,10 @@ const TabBar: React.FC<BottomTabBarProps> = ({
 
   return (
     <Animated.View
-      style={[tabBarStyles.container, realDescriptor.options.tabBarStyle]}>
+      style={[
+        tabBarStyles.container,
+        realDescriptor.options.tabBarStyle ?? {},
+      ]}>
       <Svg style={[StyleSheet.absoluteFill, tabBarStyles.svg]}>
         <Path
           fill={
@@ -242,7 +245,7 @@ function NullScreen() {
 export default function () {
   return (
     <Tabs.Navigator
-      tabBar={TabBar}
+      tabBar={props => <TabBar {...props} />}
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
@@ -288,18 +291,22 @@ export default function () {
 
 const tabBarStyles = StyleSheet.create({
   container: {
-    backgroundColor: 'transparent',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: colors.transparent,
   },
   svg: {
-    backgroundColor: 'transparent',
-    color: 'transparent',
+    backgroundColor: colors.transparent,
+    color: colors.transparent,
     width: '100%',
   },
   tab_bar: {
     width: '100%',
     height: tabBarHeight,
     flexDirection: 'row',
-    backgroundColor: 'transparent',
+    backgroundColor: colors.transparent,
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingTop: tabMiddleButtonPadding,
