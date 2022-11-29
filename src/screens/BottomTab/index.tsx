@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, { useContext, useEffect } from "react";
 import {
   BottomTabBarButtonProps,
   BottomTabBarHeightCallbackContext,
@@ -135,7 +135,9 @@ const TabBar: React.FC<BottomTabBarProps> = ({
   const setTabBarHeight = useContext(BottomTabBarHeightCallbackContext);
   const realDescriptor = Object.values(descriptors)[state.index];
 
-  setTabBarHeight?.(tabBarHeight + tabMiddleButtonPadding);
+  useEffect(() => {
+    setTabBarHeight?.(tabBarHeight + tabMiddleButtonPadding);
+  }, [setTabBarHeight]);
 
   const left = shape
     .line()
