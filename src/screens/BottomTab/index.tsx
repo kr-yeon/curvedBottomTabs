@@ -1,13 +1,20 @@
-import React, { FunctionComponent, useContext } from "react";
+import React, {useContext} from 'react';
 import {
   BottomTabBarButtonProps,
+  BottomTabBarHeightCallbackContext,
   BottomTabBarProps,
   BottomTabNavigationOptions,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Foundation from 'react-native-vector-icons/Foundation';
-import { Dimensions, Pressable, StyleSheet, Animated, View, useWindowDimensions } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Animated,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import colors from '@utils/colors';
 import ReAnimated, {
   withSpring,
@@ -37,7 +44,7 @@ interface ITabBarButton extends BottomTabBarButtonProps {
 
 interface ITabScreen {
   name: string;
-  component: FunctionComponent;
+  component: React.FunctionComponent;
   Icon: React.FC<ITabBarIcon>;
   zoomLevel?: number;
   isCenterIcon?: boolean;
@@ -125,7 +132,10 @@ const TabBar: React.FC<BottomTabBarProps> = ({
   navigation,
 }) => {
   const {width} = useWindowDimensions();
+  const setTabBarHeight = useContext(BottomTabBarHeightCallbackContext);
   const realDescriptor = Object.values(descriptors)[state.index];
+
+  setTabBarHeight?.(tabBarHeight + tabMiddleButtonPadding);
 
   const left = shape
     .line()
