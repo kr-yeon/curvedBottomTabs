@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useLayoutEffect} from 'react';
 import {
   BottomTabBarHeightCallbackContext,
   BottomTabBarProps,
@@ -39,7 +39,7 @@ const TabBar: React.FC<ITabBarProps> = ({
   const setTabBarHeight = useContext(BottomTabBarHeightCallbackContext);
   const realDescriptor = Object.values(descriptors)[state.index];
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     props.tabBarHeight && (tabBarHeight = props.tabBarHeight);
     props.tabMiddleButtonPadding &&
       (tabMiddleButtonPadding = props.tabMiddleButtonPadding);
