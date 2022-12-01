@@ -1,45 +1,23 @@
-import React, { useContext, useEffect } from "react";
+import React from 'react';
 import {
-  BottomTabBarButtonProps,
-  BottomTabBarHeightCallbackContext,
-  BottomTabBarProps,
   BottomTabNavigationOptions,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Foundation from 'react-native-vector-icons/Foundation';
-import {
-  Pressable,
-  StyleSheet,
-  Animated,
-  View,
-  useWindowDimensions,
-} from 'react-native';
+import {StyleSheet} from 'react-native';
 import colors from '@utils/colors';
 import ReAnimated, {
-  withSpring,
   useSharedValue,
   useAnimatedStyle,
-  cancelAnimation,
-  SharedValue,
 } from 'react-native-reanimated';
-import Svg, {Path} from 'react-native-svg';
-import * as shape from 'd3-shape';
 import {getBottomSpace} from 'react-native-iphone-x-helper';
-import {CommonActions} from '@react-navigation/native';
-import {MissingIcon} from '@react-navigation/elements';
+import {TabBar, TabBarButton, TabBarOptions} from '@components/BottomTabs';
 
 interface ITabBarIcon {
   color: string;
   focused: boolean;
   size: number;
-}
-
-interface ITabBarButton extends BottomTabBarButtonProps {
-  animationValue: SharedValue<number>;
-  zoomLevel: number;
-  isFocus?: boolean;
-  tabBarIcon?: (props: {focused: boolean}) => React.FunctionComponent;
 }
 
 interface ITabScreen {
@@ -53,36 +31,6 @@ interface ITabScreen {
 }
 
 const Tabs = createBottomTabNavigator();
-const tabBarHeight = 90 + getBottomSpace();
-const tabMiddleButtonPadding = 25;
-const tabMiddleButtonTopWidth = 55;
-const tabMiddleButtonBottomWidth = 80;
-const tabMiddleButtonCurvePadding = 15;
-const tabBarColor = colors.dodi_green;
-const tabBarRadius = 15;
-
-const TabBarButton: React.FC<ITabBarButton> = ({
-  animationValue,
-  zoomLevel = 1.2,
-  ...props
-}) => {
-  return (
-    <Pressable
-      onTouchStart={() => {
-        animationValue.value = withSpring(zoomLevel);
-      }}
-      onTouchEnd={() => {
-        cancelAnimation(animationValue);
-        animationValue.value = withSpring(1);
-      }}
-      onPress={props.onPress}
-      onLongPress={props.onLongPress}>
-      {props?.tabBarIcon?.({
-        focused: props.isFocus ?? false,
-      })}
-    </Pressable>
-  );
-};
 
 const TabScreen: React.FC<ITabScreen> = ({
   name,
@@ -123,130 +71,6 @@ const TabScreen: React.FC<ITabScreen> = ({
         ),
       }}
     />
-  );
-};
-
-const TabBar: React.FC<BottomTabBarProps> = ({
-  state,
-  descriptors,
-  navigation,
-}) => {
-  const {width} = useWindowDimensions();
-  const setTabBarHeight = useContext(BottomTabBarHeightCallbackContext);
-  const realDescriptor = Object.values(descriptors)[state.index];
-
-  useEffect(() => {
-    setTabBarHeight?.(tabBarHeight + tabMiddleButtonPadding);
-  }, [setTabBarHeight]);
-
-  const left = shape
-    .line()
-    .x(d => d[0])
-    .y(d => d[1])
-    .curve(shape.curveCatmullRomOpen)([
-    [tabBarRadius, tabMiddleButtonPadding],
-    [width / 2, tabMiddleButtonPadding],
-    [width / 2, tabBarHeight],
-    [0, tabBarHeight],
-    [0, tabMiddleButtonPadding + tabBarRadius],
-    [tabBarRadius / 4, tabMiddleButtonPadding + tabBarRadius / 4],
-    [tabBarRadius, tabMiddleButtonPadding],
-    [width / 2, tabMiddleButtonPadding],
-  ]);
-  const center = shape
-    .line()
-    .x(d => d[0])
-    .y(d => d[1])
-    .curve(shape.curveBasis)([
-    [
-      width / 2 - tabMiddleButtonBottomWidth / 2 - tabMiddleButtonCurvePadding,
-      tabMiddleButtonPadding,
-    ],
-    [width / 2 - tabMiddleButtonBottomWidth / 2, tabMiddleButtonPadding],
-    [width / 2 - tabMiddleButtonTopWidth / 2, 0],
-    [width / 2 + tabMiddleButtonTopWidth / 2, 0],
-    [width / 2 + tabMiddleButtonBottomWidth / 2, tabMiddleButtonPadding],
-    [
-      width / 2 + tabMiddleButtonBottomWidth / 2 + tabMiddleButtonCurvePadding,
-      tabMiddleButtonPadding,
-    ],
-  ]);
-  const right = shape
-    .line()
-    .x(d => d[0])
-    .y(d => d[1])
-    .curve(shape.curveCatmullRomOpen)([
-    [width / 2, tabMiddleButtonPadding],
-    [width - tabBarRadius, tabMiddleButtonPadding],
-    [width - tabBarRadius / 4, tabMiddleButtonPadding + tabBarRadius / 4],
-    [width, tabMiddleButtonPadding + tabBarRadius],
-    [width, tabBarHeight],
-    [width / 2, tabBarHeight],
-    [width / 2, tabMiddleButtonPadding],
-    [width - tabBarRadius, tabMiddleButtonPadding],
-  ]);
-
-  return (
-    <Animated.View
-      style={[
-        tabBarStyles.container,
-        realDescriptor.options.tabBarStyle ?? {},
-      ]}>
-      <Svg style={[StyleSheet.absoluteFill, tabBarStyles.svg]}>
-        <Path
-          fill={
-            realDescriptor.options.tabBarActiveBackgroundColor || tabBarColor
-          }
-          d={`${left} ${center} ${right}`}
-        />
-      </Svg>
-      <View style={tabBarStyles.tab_bar}>
-        {state.routes.map((route, index) => {
-          const isFocus = state.index === index;
-          const options = descriptors[route.key].options;
-          const TabButton = options.tabBarButton as React.ElementType;
-
-          const onPress = () => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
-
-            if (!isFocus && !event.defaultPrevented) {
-              navigation.dispatch({
-                ...CommonActions.navigate({name: route.name, merge: true}),
-                target: state.key,
-              });
-            }
-          };
-
-          const onLongPress = () => {
-            navigation.emit({
-              type: 'tabLongPress',
-              target: route.key,
-            });
-          };
-
-          return (
-            <TabButton
-              key={index}
-              isFocus={isFocus}
-              onPress={onPress}
-              onLongPress={onLongPress}
-              activeTintColor={options.tabBarActiveTintColor}
-              inactiveTintColor={options.tabBarInactiveTintColor}
-              activeBackgroundColor={options.tabBarActiveBackgroundColor}
-              inactiveBackgroundColor={options.tabBarInactiveBackgroundColor}
-              tabBarIcon={
-                options.tabBarIcon ??
-                (({color, size}) => <MissingIcon color={color} size={size} />)
-              }
-            />
-          );
-        })}
-      </View>
-    </Animated.View>
   );
 };
 
@@ -302,33 +126,12 @@ export default function () {
 }
 
 const tabBarStyles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: colors.transparent,
-  },
-  svg: {
-    backgroundColor: colors.transparent,
-    color: colors.transparent,
-    width: '100%',
-  },
-  tab_bar: {
-    width: '100%',
-    height: tabBarHeight,
-    flexDirection: 'row',
-    backgroundColor: colors.transparent,
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingTop: tabMiddleButtonPadding,
-  },
   center_button: {
     width: 70,
     height: 70,
     borderRadius: 35,
     backgroundColor: colors.white,
-    marginBottom: tabMiddleButtonPadding + getBottomSpace(),
+    marginBottom: TabBarOptions.tabMiddleButtonPadding + getBottomSpace(),
     justifyContent: 'center',
     alignItems: 'center',
   },
